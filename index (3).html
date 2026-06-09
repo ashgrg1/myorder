@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>FS Order</title>
+<!-- iOS home-screen / PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FS Order">
+<meta name="theme-color" content="#191713">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Crect width='180' height='180' fill='%23191713'/%3E%3Ctext x='90' y='118' font-size='90' font-family='Arial' font-weight='900' fill='%23cf3a2a' text-anchor='middle'%3EFS%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Foodservice Order","short_name":"FS Order","display":"standalone","background_color":"%23f3efe6","theme_color":"%23191713","start_url":"./index.html"}'>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--ink:#191713;--paper:#f3efe6;--card:#fbf9f3;--line:#d8d1c2;--red:#cf3a2a;--green:#2f6f4f;}
+body{margin:0;font-family:'Archivo',sans-serif;background:var(--paper);color:var(--ink);
+  padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);}
+.wrap{max-width:680px;margin:0 auto;padding:16px 0 40px;}
+.head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--ink);padding-bottom:12px;}
+.mark{font-weight:900;font-size:22px;letter-spacing:-.5px;line-height:1;}
+.sub{font-size:11px;font-weight:600;color:#8a8170;margin-top:5px;letter-spacing:.3px;text-transform:uppercase;}
+.day{text-align:right;font-weight:700;font-size:13px;line-height:1.3;}
+.day span{display:block;font-size:9px;letter-spacing:1px;color:#a39a87;}
+.day.on span{color:var(--red);}
+.stats{display:flex;gap:10px;margin:14px 0;}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 12px;}
+.stat b{font-size:24px;font-family:'IBM Plex Mono',monospace;display:block;line-height:1;}
+.stat small{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8a8170;font-weight:600;}
+.stat.acc{background:var(--ink);color:#fff;}.stat.acc small{color:#d9cfb8;}.stat.acc b{color:var(--red);}
+.tablewrap{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card);}
+.trow{display:grid;grid-template-columns:1fr 92px 92px 88px 30px;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);}
+.thead{background:var(--ink);color:#cfc6b2;font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;}
+.thead span{text-align:center;}.thead span:first-child{text-align:left;}
+.trow.need{box-shadow:inset 4px 0 0 var(--red);}
+.name{font-weight:600;font-size:13px;line-height:1.2;}
+.step{display:flex;align-items:center;justify-content:center;gap:2px;}
+.step button{width:24px;height:30px;border:1px solid var(--line);background:#fff;border-radius:5px;font-size:16px;font-weight:700;color:#6e6757;line-height:1;}
+.step input{width:30px;text-align:center;border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;}
+.order{display:flex;align-items:center;justify-content:center;gap:4px;}
+.order input{width:44px;text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;border:1.5px solid var(--ink);border-radius:6px;padding:5px 2px;background:#fff;}
+.autob{font-size:8px;border:none;background:var(--green);color:#fff;border-radius:4px;padding:3px 4px;font-weight:700;}
+.del{border:none;background:transparent;color:#c0b8a6;font-size:22px;line-height:1;}
+.total{background:var(--ink);color:#fff;border-bottom:none;font-weight:900;}
+.total span:first-child{font-size:12px;letter-spacing:.5px;text-transform:uppercase;}
+.tnum{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:17px;color:#d9cfb8;}
+.tnum.hi{color:var(--red);font-size:20px;}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+input[type=number]{-moz-appearance:textfield;}
+.add{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.add input{font-family:'Archivo';font-size:16px;padding:11px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);font-weight:600;}
+.add input.nm{flex:1;min-width:150px;}.add input.pr{width:80px;}
+.addbtn{background:var(--ink);color:#fff;border:none;border-radius:8px;padding:11px 16px;font-weight:700;font-size:14px;}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.primary{flex:1;min-width:140px;background:var(--red);color:#fff;border:none;border-radius:9px;padding:15px;font-weight:900;font-size:15px;letter-spacing:.3px;}
+.ghost{background:var(--card);border:1.5px solid var(--ink);color:var(--ink);border-radius:9px;padding:15px 18px;font-weight:700;font-size:13px;}
+.reset{background:transparent;border:1px solid var(--line);color:#8a8170;border-radius:9px;padding:15px 16px;font-weight:600;font-size:13px;}
+button{cursor:pointer;font-family:'Archivo';}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;font-size:13px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:opacity .2s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div><div class="mark">FOODSERVICE ORDER</div><div class="sub">Allsup's ACS #102382 · Mineral Wells</div></div>
+    <div class="day" id="day"></div>
+  </header>
+  <div class="stats">
+    <div class="stat acc"><b id="sLines">0</b><small>lines to order</small></div>
+    <div class="stat"><b id="sUnits">0</b><small>total units</small></div>
+    <div class="stat"><b id="sItems">0</b><small>items tracked</small></div>
+  </div>
+  <div class="tablewrap">
+    <div class="trow thead"><span>Foodservice Item</span><span>PAR</span><span>On Hand</span><span>Order</span><span></span></div>
+    <div id="rows"></div>
+    <div class="trow total"><span id="tLabel">TOTAL</span><span class="tnum" id="tPar">0</span><span class="tnum" id="tOnHand">0</span><span class="tnum hi" id="tOrder">0</span><span></span></div>
+  </div>
+  <div class="add">
+    <input class="nm" id="newName" placeholder="New foodservice item">
+    <input class="pr" id="newPar" type="number" placeholder="PAR">
+    <button class="addbtn" id="addBtn">+ Add</button>
+  </div>
+  <div class="actions">
+    <button class="primary" id="copyBtn">Copy Order</button>
+    <button class="ghost" id="csvBtn">Download CSV</button>
+    <button class="reset" id="resetBtn">Reset</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY="allsups-fs-order-v1";
+const STARTER=[["ACS Beef Bean Red Chili Burrito",30],["Chicken Cheese Flautas",24],["Beef Chimichanga",24],
+["Hot Box Taquitos",36],["Beef & Cheese Taquito",30],["Breakfast Burrito",24],["Corn Dog",20],
+["Jalapeño Cheese Bites",18],["Chicken Tender (each)",40],["Potato Wedge (lb)",25]]
+.map((r,i)=>({id:"f"+i,name:r[0],par:r[1],onHand:0,override:null}));
+
+let items=load();
+function load(){try{const s=localStorage.getItem(KEY);if(s)return JSON.parse(s);}catch(e){}return STARTER.map(p=>({...p}));}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(items));}catch(e){}}
+const suggest=p=>Math.max(0,p.par-p.onHand);
+const orderQty=p=>p.override!=null?p.override:suggest(p);
+
+let toastT;
+function flash(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1800);}
+
+function render(){
+  const rows=document.getElementById("rows");rows.innerHTML="";
+  items.forEach(p=>{
+    const need=orderQty(p)>0;
+    const row=document.createElement("div");row.className="trow"+(need?" need":"");
+    row.innerHTML=
+      '<span class="name"></span>'+
+      stepperHTML(p.id,"par",p.par)+
+      stepperHTML(p.id,"onHand",p.onHand)+
+      '<span class="order"><input type="number" data-id="'+p.id+'" data-f="order" value="'+orderQty(p)+'">'+
+      (p.override!=null?'<button class="autob" data-id="'+p.id+'" data-act="auto">auto</button>':'')+'</span>'+
+      '<button class="del" data-id="'+p.id+'" data-act="del">×</button>';
+    row.querySelector(".name").textContent=p.name;
+    rows.appendChild(row);
+  });
+  const tPar=items.reduce((s,p)=>s+p.par,0), tOH=items.reduce((s,p)=>s+p.onHand,0),
+        tOrd=items.reduce((s,p)=>s+orderQty(p),0), lines=items.filter(p=>orderQty(p)>0).length;
+  document.getElementById("tLabel").textContent="TOTAL · "+items.length+" items";
+  document.getElementById("tPar").textContent=tPar;
+  document.getElementById("tOnHand").textContent=tOH;
+  document.getElementById("tOrder").textContent=tOrd;
+  document.getElementById("sLines").textContent=lines;
+  document.getElementById("sUnits").textContent=tOrd;
+  document.getElementById("sItems").textContent=items.length;
+  save();
+}
+function stepperHTML(id,f,v){
+  return '<span class="step"><button data-id="'+id+'" data-f="'+f+'" data-d="-1">−</button>'+
+    '<input type="number" data-id="'+id+'" data-f="'+f+'" value="'+v+'">'+
+    '<button data-id="'+id+'" data-f="'+f+'" data-d="1">+</button></span>';
+}
+function find(id){return items.find(p=>p.id===id);}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  const id=b.dataset.id;
+  if(b.dataset.d){const p=find(id);const f=b.dataset.f;p[f]=Math.max(0,p[f]+ +b.dataset.d);render();}
+  else if(b.dataset.act==="del"){items=items.filter(p=>p.id!==id);render();}
+  else if(b.dataset.act==="auto"){find(id).override=null;render();}
+  else if(b.id==="addBtn")addItem();
+  else if(b.id==="copyBtn")copyOrder();
+  else if(b.id==="csvBtn")csv();
+  else if(b.id==="resetBtn"){if(confirm("Reset to starter items? Clears saved counts.")){items=STARTER.map(p=>({...p}));render();}}
+});
+document.addEventListener("change",e=>{
+  const i=e.target;if(i.tagName!=="INPUT"||!i.dataset.id)return;
+  const p=find(i.dataset.id);const v=Math.max(0,parseInt(i.value,10)||0);
+  if(i.dataset.f==="order")p.override=v;else p[i.dataset.f]=v;
+  render();
+});
+document.getElementById("addBtn").addEventListener("click",addItem);
+function addItem(){
+  const n=document.getElementById("newName").value.trim();
+  const par=parseInt(document.getElementById("newPar").value,10);
+  if(!n||isNaN(par)){flash("Enter a name and PAR");return;}
+  items.push({id:"f"+Date.now(),name:n,par:par,onHand:0,override:null});
+  document.getElementById("newName").value="";document.getElementById("newPar").value="";
+  flash("Added "+n);render();
+}
+function orderText(){
+  const list=items.filter(p=>orderQty(p)>0);
+  const day=new Date().toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"});
+  let o="ALLSUP'S #102382 — FOODSERVICE ORDER  ("+day+")\n"+"=".repeat(40)+"\n";
+  list.forEach(p=>o+="  "+orderQty(p)+" × "+p.name+"\n");
+  o+="\nTOTAL UNITS: "+list.reduce((s,p)=>s+orderQty(p),0);
+  return o;
+}
+function copyOrder(){navigator.clipboard.writeText(orderText()).then(()=>flash("Order copied")).catch(()=>flash("Copy failed"));}
+function csv(){
+  let c="Product,PAR,On Hand,Order Qty\n";
+  items.filter(p=>orderQty(p)>0).forEach(p=>c+='"'+p.name+'",'+p.par+","+p.onHand+","+orderQty(p)+"\n");
+  c+='"TOTAL",'+items.reduce((s,p)=>s+p.par,0)+","+items.reduce((s,p)=>s+p.onHand,0)+","+items.reduce((s,p)=>s+orderQty(p),0)+"\n";
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([c],{type:"text/csv"}));
+  a.download="allsups-foodservice-order.csv";a.click();flash("CSV downloaded");
+}
+(function dayTag(){
+  const d=new Date();const od=d.getDay()===1||d.getDay()===4;
+  document.getElementById("day").className="day"+(od?" on":"");
+  document.getElementById("day").innerHTML=d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+"<span>"+(od?"ORDER DAY":"off-cycle")+"</span>";
+})();
+render();
+</script>
+</body>
+</html>
